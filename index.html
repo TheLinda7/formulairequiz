@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion du Temps - Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --primary-dark: #1a252f;
+            --secondary-color: #3498db;
+            --accent-color: #2980b9;
+            --background-light: #f5f7fa;
+            --text-dark: #2c3e50;
+            --text-medium: #34495e;
+            --text-light: #7f8c8d;
+            --white: #ffffff;
+            --border-color: #dfe6e9;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--white);
+            padding: 2.5rem 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            margin: 0;
+            opacity: 0.9;
+            position: relative;
+            font-weight: 300;
+        }
+
+        main {
+            padding: 2rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .quiz-container {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .question {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background-color: var(--white);
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+        }
+
+        .question:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .question h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-medium);
+        }
+
+        .answers {
+            margin-left: 1rem;
+        }
+
+        .answers label {
+            display: block;
+            margin-bottom: 0.8rem;
+            padding: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            padding-left: 2.5rem;
+            color: var(--text-medium);
+        }
+
+        .answers label:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .answers input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .custom-radio {
+            position: absolute;
+            top: 50%;
+            left: 0.8rem;
+            transform: translateY(-50%);
+            height: 1.2rem;
+            width: 1.2rem;
+            background-color: var(--white);
+            border: 2px solid var(--text-light);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .answers label:hover .custom-radio {
+            border-color: var(--accent-color);
+        }
+
+        .answers input[type="radio"]:checked ~ .custom-radio {
+            background-color: var(--white);
+            border-color: var(--accent-color);
+        }
+
+        .custom-radio::after {
+            content: "";
+            position: absolute;
+            display: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0.6rem;
+            height: 0.6rem;
+            border-radius: 50%;
+            background: var(--accent-color);
+        }
+
+        .answers input[type="radio"]:checked ~ .custom-radio::after {
+            display: block;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: var(--white);
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .quiz-intro {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .quiz-intro h2 {
+            color: var(--text-dark);
+            margin-top: 0;
+        }
+
+        .quiz-intro ul {
+            padding-left: 1.5rem;
+        }
+
+        .quiz-intro li {
+            margin-bottom: 0.5rem;
+            position: relative;
+            color: var(--text-medium);
+        }
+
+        .quiz-intro li::before {
+            content: "•";
+            color: var(--accent-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-family: 'Poppins', sans-serif;
+            transition: var(--transition);
+            resize: vertical;
+            min-height: 100px;
+            color: var(--text-medium);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            height: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+            }
+            
+            .quiz-container {
+                padding: 1.5rem;
+            }
+            
+            .question {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Les techniques de gestion du temps</h1>
+    <p>Testez vos connaissances sur les techniques de gestion du temps</p>
+</header>
+
+<main>
+    <form class="quiz-container">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+
+        <div id="page1">
+            <h2>Page 1 : Questions (1 à 7)</h2>
+
+            <div class="question">
+                <h3>1. Qu'est-ce que le Task Batching ?</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q1">
+                        <span class="custom-radio"></span>
+                        Grouper des tâches similaires dans un bloc de temps dédié.
+                    </label>
+                    <label>
+                        <input type="radio" name="q1">
+                        <span class="custom-radio"></span>
+                        Travailler en cycles de 25 minutes.
+                    </label>
+                    <label>
+                        <input type="radio" name="q1">
+                        <span class="custom-radio"></span>
+                        Éliminer toutes les distractions.
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>2. Quelle est la durée typique d'un Pomodoro ?</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q2">
+                        <span class="custom-radio"></span>
+                        15 minutes
+                    </label>
+                    <label>
+                        <input type="radio" name="q2">
+                        <span class="custom-radio"></span>
+                        25 minutes
+                    </label>
+                    <label>
+                        <input type="radio" name="q2">
+                        <span class="custom-radio"></span>
+                        50 minutes
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>3. À quoi sert la matrice d'Eisenhower ?</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q3">
+                        <span class="custom-radio"></span>
+                        À classer les tâches selon leur urgence et importance.
+                    </label>
+                    <label>
+                        <input type="radio" name="q3">
+                        <span class="custom-radio"></span>
+                        À planifier un projet en équipe.
+                    </label>
+                    <label>
+                        <input type="radio" name="q3">
+                        <span class="custom-radio"></span>
+                        À gérer le budget d'un projet.
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>4. Le RACI est un outil de gestion du temps. (Vrai / Faux)</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q4">
+                        <span class="custom-radio"></span>
+                        Vrai
+                    </label>
+                    <label>
+                        <input type="radio" name="q4">
+                        <span class="custom-radio"></span>
+                        Faux
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>5. Quelle est l'utilité d'une Todo List ?</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q5">
+                        <span class="custom-radio"></span>
+                        Organiser les tâches à réaliser au quotidien.
+                    </label>
+                    <label>
+                        <input type="radio" name="q5">
+                        <span class="custom-radio"></span>
+                        Identifier les rôles dans un projet.
+                    </label>
+                    <label>
+                        <input type="radio" name="q5">
+                        <span class="custom-radio"></span>
+                        Répartir les budgets entre les tâches.
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>6. La technique Pomodoro favorise la concentration. (Vrai / Faux)</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q6">
+                        <span class="custom-radio"></span>
+                        Vrai
+                    </label>
+                    <label>
+                        <input type="radio" name="q6">
+                        <span class="custom-radio"></span>
+                        Faux
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>7. Donnez un avantage du Task Batching :</h3>
+                <textarea name="q7" rows="3" placeholder="Écrivez votre réponse ici..."></textarea>
+            </div>
+
+            <button type="button" onclick="nextPage('page1', 'page2')">
+                Suivant
+            </button>
+        </div>
+
+        <div id="page2" class="hidden">
+            <section class="quiz-intro">
+                <h2>Rappel des 5 techniques de gestion du temps</h2>
+                <ul>
+                    <li><strong>Task Batching</strong> : grouper les tâches similaires.</li>
+                    <li><strong>RACI</strong> : clarifier les rôles dans un projet.</li>
+                    <li><strong>Todo List</strong> : organiser son quotidien.</li>
+                    <li><strong>Matrice d'Eisenhower</strong> : prioriser par urgence/importance.</li>
+                    <li><strong>Pomodoro</strong> : alterner temps de travail et pause.</li>
+                </ul>
+            </section>
+
+            <h2>Page 2 : Questions (8 à 15)</h2>
+
+            <div class="question">
+                <h3>8. Le RACI permet de définir les rôles dans un projet. (Vrai / Faux)</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q8">
+                        <span class="custom-radio"></span>
+                        Vrai
+                    </label>
+                    <label>
+                        <input type="radio" name="q8">
+                        <span class="custom-radio"></span>
+                        Faux
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>9. Complétez : La matrice d'Eisenhower aide à...</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q9">
+                        <span class="custom-radio"></span>
+                        Gérer les horaires d'une équipe.
+                    </label>
+                    <label>
+                        <input type="radio" name="q9">
+                        <span class="custom-radio"></span>
+                        Identifier les tâches urgentes et importantes.
+                    </label>
+                    <label>
+                        <input type="radio" name="q9">
+                        <span class="custom-radio"></span>
+                        Créer des routines de travail.
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>10. Le Task Batching réduit les interruptions. (Vrai / Faux)</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q10">
+                        <span class="custom-radio"></span>
+                        Vrai
+                    </label>
+                    <label>
+                        <input type="radio" name="q10">
+                        <span class="custom-radio"></span>
+                        Faux
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>11. Une Todo List est utile uniquement pour les projets complexes. (Vrai / Faux)</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q11">
+                        <span class="custom-radio"></span>
+                        Vrai
+                    </label>
+                    <label>
+                        <input type="radio" name="q11">
+                        <span class="custom-radio"></span>
+                        Faux
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>12. Combien de pauses longues sont prévues après plusieurs Pomodoros ?</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q12">
+                        <span class="custom-radio"></span>
+                        Toutes les 2 sessions
+                    </label>
+                    <label>
+                        <input type="radio" name="q12">
+                        <span class="custom-radio"></span>
+                        Toutes les 4 sessions
+                    </label>
+                    <label>
+                        <input type="radio" name="q12">
+                        <span class="custom-radio"></span>
+                        Toutes les 6 sessions
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>13. Rédigez un exemple de tâche bien adaptée au Pomodoro :</h3>
+                <textarea name="q13" rows="3" placeholder="Écrivez votre réponse ici..."></textarea>
+            </div>
+
+            <div class="question">
+                <h3>14. La matrice d'Eisenhower distingue combien de quadrants ?</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q14">
+                        <span class="custom-radio"></span>
+                        2
+                    </label>
+                    <label>
+                        <input type="radio" name="q14">
+                        <span class="custom-radio"></span>
+                        4
+                    </label>
+                    <label>
+                        <input type="radio" name="q14">
+                        <span class="custom-radio"></span>
+                        6
+                    </label>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>15. Le RACI signifie :</h3>
+                <div class="answers">
+                    <label>
+                        <input type="radio" name="q15">
+                        <span class="custom-radio"></span>
+                        Responsable – Autorité – Collaborateur – Indépendant
+                    </label>
+                    <label>
+                        <input type="radio" name="q15">
+                        <span class="custom-radio"></span>
+                        Responsable – Approbateur – Consulté – Informé
+                    </label>
+                    <label>
+                        <input type="radio" name="q15">
+                        <span class="custom-radio"></span>
+                        Réactif – Actif – Contrôlé – Informé
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit">Envoyer le quiz</button>
+        </div>
+    </form>
+</main>
+
+<script>
+    function nextPage(currentPageId, nextPageId) {
+        document.getElementById(currentPageId).classList.add('hidden');
+        document.getElementById(nextPageId).classList.remove('hidden');
+        document.getElementById('progressBar').style.width = '100%';
+    }
+</script>
+
+</body>
+</html>
